@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 100%;height:500px;"></div>
+<script>
+    $.ajax({
+        type:"get",
+        url:"json/pcfgl.json",
+        dataType:"json",
+        success:function(xhr){
+            console.log(xhr.data[0]);
+            console.log(xhr.data[1].totallist);
+            var one=xhr.data[1].totallist;
+            var two=xhr.data[1].republishedlist;
+            var three=xhr.data[1].originalylist;
+            for(var i=0; i<one.length; i++){
+                // console.log(one[i].count);
+                // console.log(one[i].time);
+                // console.log(two[i].count);
+                // console.log(two[i].time);
+                // console.log(three[i].count);
+                // console.log(three[i].time);
+            }
+        }
+    });
+</script>
+</body>
+</html>

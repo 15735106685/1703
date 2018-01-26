@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 100%;height:500px;"></div>
+<script>
+    $(function(){
+        var myChart = echarts.init(document.getElementById('main'));
+        var colors = ['#86beed', '#c75497'];
+        var arr;
+        var arr1;
+        var arr2;
+        var arr3;
+        $.ajax({
+            type:"get",
+            url:"json/origin.json",
+            dataType:"json",
+            success:function(xhr){
+                console.log(xhr.data[0]);
+                var date=xhr.data[0];
+                arr=date.sourcerate;
+                arr1=date.unsourcerate;
+                arr2=date.totalReprintCount;
+                arr3=date.source;
+                move(arr,arr1,arr2,arr3);
+            }
+        });
+        function move(arr,arr1,arr2,arr3){
+            console.log(arr);
+            console.log(arr1);
+            console.log(arr2);
+            console.log(arr3);
+            var option = {
+                color:colors,
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'horizontal',
+                    x: 'center',
+                    y:'5%',
+                    data:['投稿单位','非投稿单位'],
+                },
+                series: [
+                    {
+                        name:'投稿单位',
+                        type:'pie',
+                        radius: ['58%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '30',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        data:[
+                            {value: arr2, name:'投稿单位'},
+                            {value: arr3, name:'非投稿单位'}
+                        ]
+                    }
+                ]
+            };
+            myChart.setOption(option);
+
+
+
+        }
+
+
+
+
+
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body style="background: rgba(77,77,77,0.87)">
+<div id="main" style="width: 100%;height:500px;"></div>
+<script>
+    $(function(){
+        var myChart = echarts.init(document.getElementById('main'));
+        var colors = ['#dbd55a', '#d14a61', '#4faeba'];
+        var days=[];  //时间
+        var arr=[]; //原创率
+        var arr1=[]; //原创量
+        var arr2=[];  //转载量
+        $.ajax({
+            type:"get",
+            url:"json/fgl.json",
+            dataType:"json",
+            success:function(xhr){
+                console.log(xhr);
+                var date=xhr.data;
+                for(var i=0; i<date.length;i++){
+                    var day=date[i].cdate;
+                    days[i]=day.substring(5,day.length);  //时间
+
+                    var num=date[i].originalrate;
+                    arr[i]=num.substring(0,num.length-1);  //原创率
+
+                    arr1[i]=date[i].ReprintCount;   //原创量
+
+                    arr2[i]=date[i].OriginalCount; //转载量
+
+                }
+                move(days,arr,arr1,arr2);
+            }
+        });
+        function move(date,arr,arr1,arr2){
+            console.log(days);
+            console.log(arr);
+            console.log(arr1);
+            console.log(arr2);
+            var option = {
+                color: colors,
+                title:{
+                    text:'分析图表',
+                    subtext: '2018-01',
+                    textStyle:{
+                        color:'#fff'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    right: '10%'
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data:['转载量','原创量','原创率(%)'],
+                    textStyle:{
+                        color:'#fff'
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        axisTick: {
+                            alignWithLabel: true
+                        },
+                        data:days,
+                        axisLine:{
+                            lineStyle:{
+                                color:'#e8e8e8'
+                            }
+                        },
+                        axisLabel:{
+                            rotate:60,
+                            color:'rgb(255,255,255)'
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '转载量',
+                        min: 0,
+                        max: 25000,
+                        position: 'left',
+                        axisLine: {
+                            show:false,
+                            lineStyle: {
+                                color: 'rgb(255,255,255)'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} ml'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '原创量',
+                        show:false,
+                        axisLine:{
+                            show:false
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '原创率(%)',
+                        min: 0,
+                        max: 30,
+                        position: 'right',
+                        axisLine: {
+                            show:false,
+                            lineStyle: {
+                                color:'rgb(255,255,255)'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: '{value} '
+                        },
+                        splitLine:{
+                            show:false
+                        }
+
+                    }
+                ],
+                dataZoom: [{
+                    type: 'inside',
+                    start: 0,
+                    end: 50
+                }, {
+                    start: 0,
+                    end: 0,
+                    handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                    handleSize: '100%',
+                    textStyle:{
+                        color:'#fff',
+                    },
+                    height:15,
+                    bottom:0,
+                    handleStyle: {
+                        color: '#fff',
+                        shadowBlur: 3,
+                        shadowColor: 'rgba(0, 0, 0, 0.6)',
+                        shadowOffsetX: 2,
+                        shadowOffsetY: 2
+                    }
+                }],
+                series: [
+                    {
+                        name:'转载量',
+                        type:'bar',
+                        data:arr1,
+                        itemStyle:{
+                            barBorderRadius:10
+                        },
+                        stack:"aa",
+                        barWidth:15
+                    },
+                    {
+                        name:'原创量',
+                        type:'bar',
+                        yAxisIndex: 1,
+                        itemStyle:{
+                            barBorderRadius:10
+                        },
+                        data: arr2,
+                        stack:"aa",
+                        barWidth:15
+                    },
+                    {
+                        name:'原创率(%)',
+                        type:'line',
+                        yAxisIndex: 2,
+                        data:arr
+                    }
+                ]
+            };
+            myChart.setOption(option);
+
+
+
+        }
+
+
+
+
+
+
+    })
+
+
+</script>
+</body>
+</html>

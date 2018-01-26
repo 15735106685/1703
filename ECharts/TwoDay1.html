@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #title{
+            width: 202px;
+            height: 50px;
+            background: #2b2b2b;
+
+        }
+        #title span{
+            width: 100px;
+            height: 50px;
+            display: block;
+            float: left;
+            color: #e2bc6b;
+            text-align: center;
+            line-height: 50px;
+            border: 1px solid #e2bc6b;
+            font-size: 18px;
+        }
+        #title span.city{
+            background: red;
+            color: white;
+            border: none;
+        }
+        .cityStyle{
+            display: none;
+        }
+        .ok{display: block;}
+    </style>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body style="background: #c2c2c2">
+<div id="title">
+    <span class="city">省份</span>
+    <span>城市</span>
+</div>
+<div class="box">
+    <div id="main" style="width: 100%;height:500px;" class="cityStyle ok"></div>
+    <div id="city" style="width: 100%;height:500px;" class="cityStyle"></div>
+</div>
+
+
+
+<script>
+    $(function(){
+        function sheng(){
+            var myChart = echarts.init(document.getElementById('main'));
+            var day=[];
+            var name={};
+            $.ajax({
+                type:"get",
+                url:"json/provence.json",
+                dataType:'json',
+                success:function(xhr){
+                    console.log(xhr.data);
+                    for(var i=0; i<xhr.data.length; i++){
+                        name=xhr.data[i].name;
+                        day[i]={name:xhr.data[i].name,value:xhr.data[i].count};
+                    }
+                    console.log(day);
+                    move(day);
+                }
+            });
+            function move(day,name){
+                var option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter:'{b}'+"<br/>"+'转载量:'+'{c}',
+                    },
+                    visualMap: {
+                        min: 0,
+                        max: 2500,
+                        left: 'left',
+                        top: 'bottom',
+                        text: ['高','低'], // 文本，默认为数值文本
+                        textStyle:{color:'#fff'},
+                        calculable: true
+                    },
+                    series: [
+                        {
+                            name:'转载量',
+                            type: 'map',
+                            mapType: 'china',
+                            roam: false,
+                            label: {
+                                textShadowColor:'blue',
+                                emphasis: {
+                                    show: true
+                                }
+                            },
+                            data:day,
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+
+            }
+        }
+        sheng();
+        function City(){
+            var myChart = echarts.init(document.getElementById('city'));
+
+        }
+        City();
+
+        $("#title span").on("click",function(){
+            var index=$(this).index();
+            $(this).addClass("city").siblings().removeClass("city");
+            $(".cityStyle").eq(index).addClass("ok").siblings().removeClass("ok");
+        })
+
+    })
+</script>
+</body>
+</html>

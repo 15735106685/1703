@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+</head>
+<body style="background: #595959">
+<div id="city" style="width: 60%;height:600px;float: left;"></div>
+<div id="small" style="width: 40%;height:600px;float: right;"></div>
+<script>
+    $(function(){
+        function one() {
+            var myChart = echarts.init(document.getElementById('city'));
+            var myChart1 = echarts.init(document.getElementById('small'));
+            var names=[];
+            var city={name:"",value:""};
+            $.ajax({
+                type: "get",
+                url: 'json/citys.json',
+                dataType: 'json',
+                success: function (xhr) {
+                    console.log(xhr.data);
+                    $.each(xhr.data, function (index, value) {
+                        city={name:value.name, value:[value.longitude,value.latitude,value.count]};
+                        names.push(city);
+                    })
+                    auto(names);
+                    move();
+                }
+            });
+            function auto(names) {
+                var option = {
+                    backgroundColor: '#404a59',
+                    tooltip : {
+                        trigger: 'item',
+                        formatter:'{b}:{c}',
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        y: 'bottom',
+                        x:'right',
+                        data:['pm2.5'],
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                    geo: {
+                        map: 'china',
+                        label: {
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        roam: true,
+                        itemStyle: {
+                            normal: {
+                                areaColor: '#323c48',
+                                borderColor: '#111'
+                            },
+                            emphasis: {
+                                areaColor: '#2a333d'
+                            }
+                        }
+                    },
+                    series : [
+                        {
+                            type: 'scatter',
+                            coordinateSystem: 'geo',
+                            label: {
+                                normal: {
+                                    formatter: '{b}',
+                                    position: 'right',
+                                    show: false
+                                },
+                                emphasis: {
+                                    show: false
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#ddb926'
+                                }
+                            }
+                        },
+                        {
+                            name: 'Top 5',
+                            type: 'effectScatter',
+                            coordinateSystem: 'geo',
+                            data: names,
+                            symbolSize: function (val) {
+                                return val[2] / 600;
+                            },
+                            showEffectOn: 'render',
+                            rippleEffect: {
+                                brushType: 'stroke'
+                            },
+                            hoverAnimation: true,
+                            label: {
+                                normal: {
+                                    formatter: '{b}',
+                                    position: 'right',
+                                    show: false
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    color: '#f4e925',
+                                    shadowBlur: 10,
+                                    shadowColor: '#333'
+                                }
+                            },
+                            zlevel: 1
+                        }
+                    ]
+                };
+                myChart.setOption(option);
+            }
+            function move(){
+                var option = {
+                    title:{
+                        text:"TOP 10:",
+                        textStyle:{
+                            color:'#fff'
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        show:false,
+                        type: 'value',
+                        boundaryGap: [0, 0.01]
+                    },
+                    yAxis: {
+
+                        type: 'category',
+                        data: ['巴西','印尼','美国','印度','中国','世界人口(万)'],
+                        axisLine:{
+                            show:false
+                        },
+                        axisTick:{
+                            show:false
+                        },
+                        axisLabel:{
+                            color:'rgb(255,255,255)'
+                        }
+                    },
+                    series: [
+                        {
+                            name: '2011年',
+                            type: 'bar',
+                            data: [18203, 23489, 29034, 104970, 131744, 630230],
+                            barWidth:20,
+                            itemStyle:{
+                                barBorderRadius:10
+                            },
+                        }
+                    ]
+                };
+                myChart1.setOption(option);
+            }
+
+        }
+        one();
+    })
+</script>
+</body>
+</html>
